@@ -64,7 +64,7 @@ function clearItems() {
     checkUI();
 }
 
-//      //      //      Clear UI      \\      \\      \\
+//      //      //      Check UI      \\      \\      \\
 function checkUI() {
     const items = list.querySelectorAll('li');
 
@@ -77,8 +77,30 @@ function checkUI() {
     }
 }
 
+//      //      //      Filter      \\      \\      \\
+function filterItems(e) {
+    const items = list.querySelectorAll('li');
+    const inputText = e.target.value.toLocaleLowerCase();
+
+    // items.forEach((item => {
+    //     if (item.textContent.toLocaleLowerCase().includes(inputText)) {
+    //         item.style.display = 'block';
+    //     } else {
+    //         item.style.display = 'none';
+    //     }
+    // }));
+
+    items.forEach((item => {
+        item.style.display =
+            item.textContent.toLocaleLowerCase().includes(inputText)
+            ? 'block'
+            : 'none';
+    }));
+}
+
 //      //      //      Event listeners      \\      \\      \\
 checkUI();
 form.addEventListener('submit', addItem);
 list.addEventListener('click', deleteItem);
 clearButton.addEventListener('click', clearItems);
+filter.addEventListener('input', filterItems);

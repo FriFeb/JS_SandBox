@@ -17,6 +17,11 @@ function onAddItem(e) {
         return;
     }
 
+    if (checkIfItemExist(productName)) {
+        alert('Item already exist!');
+        return;
+    }
+
     if (isEditMode) {
         console.log(list.children);
         const itemToEdit = list.querySelector('.edit-mode');
@@ -27,7 +32,6 @@ function onAddItem(e) {
         itemToEdit.classList.remove('edit-mode');
 
         isEditMode = false;
-        
     }
 
     addItemToDOM(productName);
@@ -60,6 +64,11 @@ function createIcon(className) {
     const icon = document.createElement('i');
     icon.className = className;
     return icon;
+}
+
+function checkIfItemExist(item) {
+    const itemsFromStorage = getItemsFromLocalStorage();
+    return itemsFromStorage.includes(item);
 }
 
 //      //      //      Producs to/from LocalStorage      \\      \\      \\

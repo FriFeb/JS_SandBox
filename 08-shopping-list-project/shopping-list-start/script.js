@@ -1,8 +1,10 @@
 const form = document.querySelector('#item-form');
 const inputForm = document.querySelector('#item-input');
+const buttonForm = form.querySelector('button');
 const filter = document.querySelector('#filter');
 const list = document.querySelector('#item-list');
 const clearButton = document.querySelector('#clear');
+let isEditMode = false;
 
 //      //      //      Adding product      \\      \\      \\
 function onAddItem(e) {
@@ -13,6 +15,19 @@ function onAddItem(e) {
     if (inputForm.value.trim() === '') {
         alert('Please enter a product name!');
         return;
+    }
+
+    if (isEditMode) {
+        console.log(list.children);
+        const itemToEdit = list.querySelector('.edit-mode');
+        console.log(itemToEdit);
+
+        deleteItemFromStorage(itemToEdit);
+        itemToEdit.remove();
+        itemToEdit.classList.remove('edit-mode');
+
+        isEditMode = false;
+        
     }
 
     addItemToDOM(productName);
@@ -75,11 +90,33 @@ function displayItems() {
     }
 }
 
-//      //      //      On click events      \\      \\      \\
+//      //      //      On click List events      \\      \\      \\
 function onClickItem(e) {
-    if (e.target.parentElement.classList.value.includes('remove-item')) {
+    const item = e.target;
+
+    if (item.parentElement.classList.value.includes('remove-item')) {
         deleteItem(e.target.parentElement.parentElement);
     }
+
+    if (item.textContent && e.currentTarget !== item) {
+        updateItem(item);
+    };
+}
+
+//      //      //      Updating product      \\      \\      \\
+function updateItem(item) {
+
+    inputForm.value = item.textContent;
+    isEditMode = true;
+
+    list
+        .querySelectorAll('li')
+        .forEach(item => { item.classList.remove('edit-mode'); });
+
+    item.classList.add('edit-mode');
+
+    buttonForm.textContent = 'Update item';
+    buttonForm.style.backgroundColor = '#0aaaa0'
 }
 
 //      //      //      Deleting product(s)      \\      \\      \\
@@ -124,6 +161,11 @@ function checkUI() {
         filter.style.display = 'block';
         clearButton.style.display = 'block';
     }
+
+    buttonForm.innerHTML = `<i class="fa-solid fa-plus"></i> Add Item`;
+    buttonForm.style.backgroundColor = 'black'
+
+    isEditMode = false;
 }
 
 //      //      //      Filter products      \\      \\      \\

@@ -13,12 +13,14 @@ class CalorieTracker {
     addMeal(meal) {
         this.#meals.push(meal);
         this.#totalCalories += meal.calories;
+        this.#displayNewItemInDOM(meal, 'meal');
         this.#render();
     }
 
     addWorkout(workout) {
         this.#workouts.push(workout);
         this.#totalCalories -= workout.calories;
+        this.#displayNewItemInDOM(workout, 'workout');
         this.#render();
     }
 
@@ -77,6 +79,33 @@ class CalorieTracker {
         caloriesProgressDOM.style.width = `${progress}%`;
     }
 
+    #displayNewItemInDOM(obj, type) {
+        const items = document.querySelector(`#${type}-items`);
+
+        const div = document.createElement('div');
+        div.classList.add('card', 'my-2');
+        div.setAttribute('id', obj.id);
+
+        const bgType = type === 'meal'
+            ? 'primary'
+            : 'secondary';
+
+        div.innerHTML = `
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="mx-1">${obj.name}</h4>
+                    <div class="fs-1 bg-${bgType} text-white text-center rounded-2 px-2 px-sm-5">
+                    ${obj.calories}</div>
+                    <button class="delete btn btn-danger btn-sm mx-2">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            `;
+
+        items.appendChild(div);
+    }
+
     #render() {
         this.#displayCaloriesLimit();
         this.#displayCaloriesTotal();
@@ -126,8 +155,6 @@ class App {
             ? this.#tracker.addMeal(new Meal(name.value, +calories.value))
             : this.#tracker.addWorkout(new Workout(name.value, +calories.value));
 
-        // this.#displayNewItemInDOM(type, name.value, calories.value);
-
         name.value = '';
         calories.value = '';
 
@@ -136,32 +163,6 @@ class App {
             toggle: true
         });
     }
-
-    // #displayNewItemInDOM(type, name, calories) {
-    //     const items = document.querySelector(`#${type}-items`);
-
-    //     const div = document.createElement('div');
-    //     div.classList.add('card', 'my-2');
-
-    //     const bgType = type === 'meal'
-    //         ? 'primary'
-    //         : 'secondary';
-
-    //     div.innerHTML = `
-    //         <div class="card-body">
-    //             <div class="d-flex align-items-center justify-content-between">
-    //                 <h4 class="mx-1">${name}</h4>
-    //                 <div class="fs-1 bg-${bgType} text-white text-center rounded-2 px-2 px-sm-5">
-    //                 ${calories}</div>
-    //                 <button class="delete btn btn-danger btn-sm mx-2">
-    //                     <i class="fa-solid fa-xmark"></i>
-    //                 </button>
-    //             </div>
-    //         </div>
-    //         `;
-
-    //     items.appendChild(div);
-    // }
 }
 
 const app = new App();

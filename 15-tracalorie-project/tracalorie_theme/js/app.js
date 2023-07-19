@@ -5,12 +5,14 @@ class CalorieTracker {
     #workouts = [];
 
     constructor() {
+        this.#displayCaloriesLimit();
         this.#displayCaloriesTotal();
         this.#displayCaloriesConsumed();
         this.#displayCaloriesBurned();
         this.#displayCaloriesReamining()
     }
 
+    //  Public methods
 
     addMeal(meal) {
         this.#meals.push(meal);
@@ -24,6 +26,47 @@ class CalorieTracker {
         this.#render();
     }
 
+    //  Private methods
+
+    #displayCaloriesLimit() {
+        const calorieLimitDOM = document.querySelector('#calories-limit');
+        calorieLimitDOM.innerText = this.#calorieLimit;
+
+    }
+
+    #displayCaloriesTotal() {
+        const totalCaloriesDOM = document.querySelector('#calories-total');
+        totalCaloriesDOM.innerText = this.#totalCalories;
+    }
+
+    #displayCaloriesConsumed() {
+        const caloriesConsumedDOM = document.querySelector('#calories-consumed');
+        const consumed = this.#meals.reduce((acc, meal) => acc + meal.calories, 0);
+
+        caloriesConsumedDOM.innerHTML = consumed;
+    }
+
+    #displayCaloriesBurned() {
+        const caloriesBurnedDOM = document.querySelector('#calories-burned');
+        const burned = this.#workouts.reduce((acc, meal) => acc + meal.calories, 0);
+
+        caloriesBurnedDOM.innerHTML = burned;
+    }
+
+    #displayCaloriesReamining() {
+        const caloriesRemainingDOM = document.querySelector('#calories-remaining');
+        const remaining = this.#calorieLimit - this.#totalCalories;
+
+        caloriesRemainingDOM.innerHTML = remaining;
+    }
+
+    #render() {
+        this.#displayCaloriesLimit();
+        this.#displayCaloriesTotal();
+        this.#displayCaloriesConsumed();
+        this.#displayCaloriesBurned();
+        this.#displayCaloriesReamining()
+    }
 }
 
 class Meal {

@@ -52,7 +52,7 @@ class CalorieTracker {
     #displayCaloriesRemaining() {
         const caloriesRemainingDOM = document.querySelector('#calories-remaining');
         const caloriesProgressDOM = document.querySelector('#calorie-progress')
-        
+
         const remaining = this.#calorieLimit - this.#totalCalories;
         caloriesRemainingDOM.innerHTML = remaining;
 
@@ -103,15 +103,108 @@ class Workout {
     }
 }
 
-const tracker = new CalorieTracker();
+class App {
+    #tracker = new CalorieTracker();
 
-const meal2 = new Meal('dinner', 300);
-const meal1 = new Meal('lunch', 2000);
-const workout1 = new Meal('morning run', 200);
-const workout2 = new Meal('morning run', 200);
+    constructor() {
+        document.querySelector('#meal-form').addEventListener('submit', this.#newMeal.bind(this));
+        document.querySelector('#workout-form').addEventListener('submit', this.#newWorkout.bind(this));
+    };
 
-tracker.addMeal(meal1);
-tracker.addMeal(meal2);
-tracker.addWorkout(workout1);
-tracker.addWorkout(workout2);
+    #newMeal(e) {
+        e.preventDefault();
+
+        const name = document.querySelector('#meal-name');
+        const calories = document.querySelector('#meal-calories');
+
+        if (name.value === '' || calories.value === '') {
+            alert('Please enter all fields');
+            return;
+        }
+
+        const mealItem = new Meal(name.value, +calories.value);
+        this.#tracker.addMeal(mealItem);
+
+        this.#displayNewMealInDOM(name.value, calories.value);
+
+        name.value = '';
+        calories.value = '';
+
+        const collapseMeal = document.querySelector('#collapse-meal');
+        new bootstrap.Collapse(collapseMeal, {
+            toggle: true
+        });
+    }
+
+    // #displayNewMealInDOM(name, calories) {
+    //     const mealItems = document.querySelector('#meal-items');
+
+    //     const div = document.createElement('div');
+    //     div.classList.add('card', 'my-2');
+
+    //     div.innerHTML = `
+    //         <div class="card-body">
+    //             <div class="d-flex align-items-center justify-content-between">
+    //                 <h4 class="mx-1">${name}</h4>
+    //                 <div class="fs-1 bg-primary text-white text-center rounded-2 px-2 px-sm-5">
+    //                 ${calories}</div>
+    //                 <button class="delete btn btn-danger btn-sm mx-2">
+    //                     <i class="fa-solid fa-xmark"></i>
+    //                 </button>
+    //             </div>
+    //         </div>
+    //         `;
+
+    //     mealItems.appendChild(div);
+    // }
+
+    #newWorkout(e) {
+        e.preventDefault();
+
+        const name = document.querySelector('#workout-name');
+        const calories = document.querySelector('#workout-calories');
+
+        if (name.value === '' || calories.value === '') {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        const workoutItem = new Workout(name.value, +calories.value);
+        this.#tracker.addWorkout(workoutItem);
+
+        this.#displayNewWorkoutInDOM(name.value, calories.value);
+
+        name.value = '';
+        calories.value = '';
+
+        const collapseWorkout = document.querySelector('#collapse-meal');
+        new bootstrap.Collapse(collapseWorkout, {
+            toggle: true
+        });
+    }
+
+    // #displayNewWorkoutInDOM(name, calories) {
+    //     const workoutItems = document.querySelector('#workout-items');
+
+    //     const div = document.createElement('div');
+    //     div.classList.add('card', 'my-2');
+
+    //     div.innerHTML = `
+    //         <div class="card-body">
+    //             <div class="d-flex align-items-center justify-content-between">
+    //                 <h4 class="mx-1">${name}</h4>
+    //                 <div class="fs-1 bg-secondary text-white text-center rounded-2 px-2 px-sm-5">
+    //                 ${calories}</div>
+    //                 <button class="delete btn btn-danger btn-sm mx-2">
+    //                 <i class="fa-solid fa-xmark"></i>
+    //                 </button>
+    //             </div>
+    //         </div>
+    //         `;
+
+    //     workoutItems.appendChild(div);
+    // }
+}
+
+const app = new App();
 

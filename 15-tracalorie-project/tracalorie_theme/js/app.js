@@ -1,19 +1,23 @@
 class CalorieTracker {
     #calorieLimit = Storage.getCalorieLimit();
     #totalCalories = Storage.getTotalCalories();
-    #meals = [];
-    #workouts = [];
+    #meals = Storage.getMeals();
+    #workouts = Storage.getWorkouts();
 
     constructor() {
+        this.#loadItems();
         this.#render();
     }
 
     //  Public methods
 
     addMeal(meal) {
-        this.#meals.push(meal);
+        Storage.setMeals(meal);
+        this.#meals = Storage.getMeals();
+
         Storage.setTotalCalories(+Storage.getTotalCalories() + +meal.calories);
         this.#totalCalories = Storage.getTotalCalories();
+
         this.#displayNewItemInDOM(meal, 'meal');
         this.#render();
     }
@@ -31,9 +35,12 @@ class CalorieTracker {
     }
     
     addWorkout(workout) {
-        this.#workouts.push(workout);
+        Storage.setWorkouts(workout);
+        this.#workouts = Storage.getWorkouts();
+
         Storage.setTotalCalories(Storage.getTotalCalories() - workout.calories);
         this.#totalCalories = Storage.getTotalCalories();
+
         this.#displayNewItemInDOM(workout, 'workout');
         this.#render();
     }
@@ -145,6 +152,12 @@ class CalorieTracker {
         items.appendChild(div);
     }
 
+    #loadItems() {
+        this.#meals.forEach(meal => this.#displayNewItemInDOM(meal, 'meal'));
+        
+        this.#workouts.forEach(workout => this.#displayNewItemInDOM(workout, 'workout'));
+    }
+
     #render() {
         this.#displayCaloriesLimit();
         this.#displayCaloriesTotal();
@@ -184,6 +197,26 @@ class Storage {
     }
     static setTotalCalories(totalCalories) {
         localStorage.setItem('totalCalories', totalCalories);
+    }
+
+    static getMeals() {
+        return JSON.parse(localStorage.getItem('meals')) || [];
+    }
+    static setMeals(meal) {
+        const meals = this.getMeals();
+        meals.push(meal);
+
+        localStorage.setItem('meals', JSON.stringify(meals));
+    }
+
+    static getWorkouts() {
+        return JSON.parse(localStorage.getItem('workouts')) || [];
+    }
+    static setWorkouts(workout) {
+        const workouts = this.getWorkouts();
+        workouts.push(workout);
+
+        localStorage.setItem('workouts', JSON.stringify(workouts));
     }
 }
 

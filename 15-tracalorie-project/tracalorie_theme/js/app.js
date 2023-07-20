@@ -17,11 +17,33 @@ class CalorieTracker {
         this.#render();
     }
 
+    removeMeal(id) {
+        this.#meals.forEach((meal, index) => {
+            if (meal.id == id) {
+                this.#meals.splice(index, 1);
+                this.#totalCalories -= meal.calories;
+                this.#render();
+                return;
+            }
+        });
+    }
+
     addWorkout(workout) {
         this.#workouts.push(workout);
         this.#totalCalories -= workout.calories;
         this.#displayNewItemInDOM(workout, 'workout');
         this.#render();
+    }
+
+    removeWorkout(id) {
+        this.#workouts.forEach((workout, index) => {
+            if (workout.id == id) {
+                this.#workouts.splice(index, 1);
+                this.#totalCalories += workout.calories;
+                this.#render();
+                return;
+            }
+        });
     }
 
     //  Private methods
@@ -138,6 +160,9 @@ class App {
     constructor() {
         document.querySelector('#meal-form').addEventListener('submit', this.#newItem.bind(this, 'meal'));
         document.querySelector('#workout-form').addEventListener('submit', this.#newItem.bind(this, 'workout'));
+        
+        document.querySelector('#meal-items').addEventListener('click', this.#removeItem.bind(this, 'meal'));
+        document.querySelector('#workout-items').addEventListener('click', this.#removeItem.bind(this, 'workout'));
     };
 
     #newItem(type, e) {
@@ -163,6 +188,24 @@ class App {
             toggle: true
         });
     }
+
+    #removeItem(type, e) {
+        if (e.target.classList.contains('fa-xmark') || e.target.classList.contains('delete')) {
+
+            if (confirm('Are you sure?')) {
+                const item = e.target.closest('.card');
+                const id = item.getAttribute('id');
+
+                type === 'meal'
+                    ? this.#tracker.removeMeal(id)
+                    : this.#tracker.removeWorkout(id);
+                
+                    item.remove();
+            };
+        }
+    }
+
+
 }
 
 const app = new App();

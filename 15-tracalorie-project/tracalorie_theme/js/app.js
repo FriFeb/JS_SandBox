@@ -46,6 +46,13 @@ class CalorieTracker {
         });
     }
 
+    resetDay() {
+        this.#meals = [];
+        this.#workouts = [];
+        this.#totalCalories = 0;
+        this.#render();
+    }
+
     //  Private methods
 
     #displayCaloriesLimit() {
@@ -160,9 +167,14 @@ class App {
     constructor() {
         document.querySelector('#meal-form').addEventListener('submit', this.#newItem.bind(this, 'meal'));
         document.querySelector('#workout-form').addEventListener('submit', this.#newItem.bind(this, 'workout'));
-        
+
         document.querySelector('#meal-items').addEventListener('click', this.#removeItem.bind(this, 'meal'));
         document.querySelector('#workout-items').addEventListener('click', this.#removeItem.bind(this, 'workout'));
+
+        document.querySelector('#filter-meals').addEventListener('input', this.#filterItems.bind(this, 'meal'));
+        document.querySelector('#filter-workouts').addEventListener('input', this.#filterItems.bind(this, 'workout'));
+
+        document.querySelector('#reset').addEventListener('click', this.#reset.bind(this));
     };
 
     #newItem(type, e) {
@@ -199,12 +211,36 @@ class App {
                 type === 'meal'
                     ? this.#tracker.removeMeal(id)
                     : this.#tracker.removeWorkout(id);
-                
-                    item.remove();
+
+                item.remove();
             };
         }
     }
 
+    #filterItems(type, e) {
+        const inputText = e.target.value.toLowerCase();
+
+        const items = document.querySelectorAll(`#${type}-items .card`);
+
+        items.forEach(item => {
+            const itemName = item.querySelector('.mx-1').innerText.toLowerCase();
+
+            if (itemName.includes(inputText)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    }
+
+    #reset() {
+        document.querySelector('#meal-items').innerHTML = '';
+        document.querySelector('#workout-items').innerHTML = '';
+        document.querySelector('#filter-meals').value = '';
+        document.querySelector('#filter-workouts').value = '';
+
+        this.#tracker.resetDay();
+    }
 
 }
 

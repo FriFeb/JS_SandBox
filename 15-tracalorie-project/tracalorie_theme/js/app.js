@@ -1,6 +1,6 @@
 class CalorieTracker {
     #calorieLimit = Storage.getCalorieLimit();
-    #totalCalories = 0;
+    #totalCalories = Storage.getTotalCalories();
     #meals = [];
     #workouts = [];
 
@@ -12,7 +12,8 @@ class CalorieTracker {
 
     addMeal(meal) {
         this.#meals.push(meal);
-        this.#totalCalories += meal.calories;
+        Storage.setTotalCalories(+Storage.getTotalCalories() + +meal.calories);
+        this.#totalCalories = Storage.getTotalCalories();
         this.#displayNewItemInDOM(meal, 'meal');
         this.#render();
     }
@@ -21,16 +22,18 @@ class CalorieTracker {
         this.#meals.forEach((meal, index) => {
             if (meal.id == id) {
                 this.#meals.splice(index, 1);
-                this.#totalCalories -= meal.calories;
+                Storage.setTotalCalories(Storage.getTotalCalories() - meal.calories);
+                this.#totalCalories = Storage.getTotalCalories();
                 this.#render();
                 return;
             }
         });
     }
-
+    
     addWorkout(workout) {
         this.#workouts.push(workout);
-        this.#totalCalories -= workout.calories;
+        Storage.setTotalCalories(Storage.getTotalCalories() - workout.calories);
+        this.#totalCalories = Storage.getTotalCalories();
         this.#displayNewItemInDOM(workout, 'workout');
         this.#render();
     }
@@ -39,7 +42,8 @@ class CalorieTracker {
         this.#workouts.forEach((workout, index) => {
             if (workout.id == id) {
                 this.#workouts.splice(index, 1);
-                this.#totalCalories += workout.calories;
+                Storage.setTotalCalories(+Storage.getTotalCalories() + +workout.calories);
+                this.#totalCalories = Storage.getTotalCalories();
                 this.#render();
                 return;
             }
@@ -55,7 +59,7 @@ class CalorieTracker {
 
     setLimit(limit) {
         Storage.setCalorieLimit(limit);
-        this.#calorieLimit = limit;
+        this.#calorieLimit = Storage.getCalorieLimit();
         this.#render();
     }
 
@@ -171,9 +175,15 @@ class Storage {
     static getCalorieLimit() {
         return localStorage.getItem('calorieLimit') || 2000;
     }
-
     static setCalorieLimit(calorieLimit) {
         localStorage.setItem('calorieLimit', calorieLimit);
+    }
+
+    static getTotalCalories() {
+        return localStorage.getItem('totalCalories') || 0;
+    }
+    static setTotalCalories(totalCalories) {
+        localStorage.setItem('totalCalories', totalCalories);
     }
 }
 

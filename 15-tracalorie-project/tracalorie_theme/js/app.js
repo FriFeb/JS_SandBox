@@ -12,7 +12,7 @@ class CalorieTracker {
     //  Public methods
 
     addMeal(meal) {
-        Storage.setMeals(meal);
+        Storage.addMeal(meal);
         this.#meals = Storage.getMeals();
 
         Storage.setTotalCalories(+Storage.getTotalCalories() + +meal.calories);
@@ -23,19 +23,16 @@ class CalorieTracker {
     }
 
     removeMeal(id) {
-        this.#meals.forEach((meal, index) => {
-            if (meal.id == id) {
-                this.#meals.splice(index, 1);
-                Storage.setTotalCalories(Storage.getTotalCalories() - meal.calories);
-                this.#totalCalories = Storage.getTotalCalories();
-                this.#render();
-                return;
-            }
-        });
+        Storage.removeMeal(id);
+        this.#meals = Storage.getMeals();
+
+        this.#totalCalories = Storage.getTotalCalories();
+
+        this.#render();
     }
-    
+
     addWorkout(workout) {
-        Storage.setWorkouts(workout);
+        Storage.addWorkout(workout);
         this.#workouts = Storage.getWorkouts();
 
         Storage.setTotalCalories(Storage.getTotalCalories() - workout.calories);
@@ -46,21 +43,21 @@ class CalorieTracker {
     }
 
     removeWorkout(id) {
-        this.#workouts.forEach((workout, index) => {
-            if (workout.id == id) {
-                this.#workouts.splice(index, 1);
-                Storage.setTotalCalories(+Storage.getTotalCalories() + +workout.calories);
-                this.#totalCalories = Storage.getTotalCalories();
-                this.#render();
-                return;
-            }
-        });
+        Storage.removeWorkout(id);
+        this.#workouts = Storage.getWorkouts();
+
+        this.#totalCalories = Storage.getTotalCalories();
+
+        this.#render();
     }
 
     resetDay() {
-        this.#meals = [];
-        this.#workouts = [];
-        this.#totalCalories = 0;
+        Storage.resetAll();
+
+        this.#meals = Storage.getMeals();
+        this.#workouts = Storage.getWorkouts();
+        this.#totalCalories = Storage.getTotalCalories();
+
         this.#render();
     }
 
@@ -154,7 +151,7 @@ class CalorieTracker {
 
     #loadItems() {
         this.#meals.forEach(meal => this.#displayNewItemInDOM(meal, 'meal'));
-        
+
         this.#workouts.forEach(workout => this.#displayNewItemInDOM(workout, 'workout'));
     }
 
@@ -202,9 +199,21 @@ class Storage {
     static getMeals() {
         return JSON.parse(localStorage.getItem('meals')) || [];
     }
-    static setMeals(meal) {
+    static addMeal(meal) {
         const meals = this.getMeals();
         meals.push(meal);
+
+        localStorage.setItem('meals', JSON.stringify(meals));
+    }
+    static removeMeal(id) {
+        const meals = this.getMeals();
+
+        meals.forEach((meal, index) => {
+            if (meal.id === id) {
+                meals.splice(index, 1);
+                Storage.setTotalCalories(Storage.getTotalCalories() - meal.calories);
+            }
+        });
 
         localStorage.setItem('meals', JSON.stringify(meals));
     }
@@ -212,11 +221,29 @@ class Storage {
     static getWorkouts() {
         return JSON.parse(localStorage.getItem('workouts')) || [];
     }
-    static setWorkouts(workout) {
+    static addWorkout(workout) {
         const workouts = this.getWorkouts();
         workouts.push(workout);
 
         localStorage.setItem('workouts', JSON.stringify(workouts));
+    }
+    static removeWorkout(id) {
+        const workouts = this.getWorkouts();
+
+        workouts.forEach((workout, index) => {
+            if (workout.id === id) {
+                workouts.splice(index, 1);
+                Storage.setTotalCalories(+Storage.getTotalCalories() + +workout.calories);
+            }
+        });
+
+        localStorage.setItem('workouts', JSON.stringify(workouts));
+    }
+
+    static resetAll() {
+        localStorage.setItem('totalCalories', 0);
+        localStorage.setItem('meals', JSON.stringify([]));
+        localStorage.setItem('workouts', JSON.stringify([]));
     }
 }
 

@@ -53,6 +53,11 @@ class CalorieTracker {
         this.#render();
     }
 
+    setLimit(limit) {
+        this.#calorieLimit = limit;
+        this.#render();
+    }
+
     //  Private methods
 
     #displayCaloriesLimit() {
@@ -175,6 +180,8 @@ class App {
         document.querySelector('#filter-workouts').addEventListener('input', this.#filterItems.bind(this, 'workout'));
 
         document.querySelector('#reset').addEventListener('click', this.#reset.bind(this));
+
+        document.querySelector('#limit-form').addEventListener('submit', this.#setLimit.bind(this));
     };
 
     #newItem(type, e) {
@@ -240,6 +247,22 @@ class App {
         document.querySelector('#filter-workouts').value = '';
 
         this.#tracker.resetDay();
+    }
+
+    #setLimit(e) {
+        e.preventDefault();
+        
+        const limit = document.querySelector('#limit');
+
+        if (limit.value.trim() <= 0 || isNaN(limit.value.trim())) {
+            alert('Please add a limit');
+            return;
+        }
+
+        this.#tracker.setLimit(limit.value);
+        limit.value = '';
+
+        document.querySelector('#limit-modal').querySelector('.btn-close').click();
     }
 
 }
